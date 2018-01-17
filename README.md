@@ -1,2 +1,2 @@
 # derSequentoulli
-Euro rack Sequential Switch and Bernoulli Gate
+Eurorack Sequential Switch and Bernoulli Gate
