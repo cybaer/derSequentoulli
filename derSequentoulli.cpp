@@ -8,9 +8,7 @@
 
 //#include <avr/interrupt.h>      // Header-Datei f. Interruptfunktion
 #include "avrlib/time.h"
-//#include "avrlib/spi.h"
 #include "avrlib/gpio.h"
-//#include "avrlib/serial.h"
 #include "avrlib/adc.h"
 #include "avrlib/devices/analogSwitch.h"
 
