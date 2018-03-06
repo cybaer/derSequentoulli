@@ -10,7 +10,7 @@
 #include "avrlib/time.h"
 #include "avrlib/gpio.h"
 #include "avrlib/adc.h"
-#include "avrlib/devices/analogSwitch.h"
+#include "HardwareConfig.h"
 
 
 /*
