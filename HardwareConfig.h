@@ -26,7 +26,6 @@
 #include "avrlib/gpio.h"
 #include "avrlib/adc.h"
 
-
 using namespace avrlib;
 
 typedef Inverter<Gpio<PortD, 7> > Trigger;  // 13
@@ -39,7 +38,8 @@ typedef Inverter<Gpio<PortD, 2> > Output_4;  // 2
 
 typedef Inverter<Gpio<PortB, 6> > OutputReturn;  // 9
 
-typedef AnalogSwitch<Adc, 0, 4> SwitchSteps;
+static const uint8_t AdcChannelSwitch = 4;
+typedef AnalogSwitch<Adc, 0, AdcChannelSwitch> SwitchSteps;
 
 extern Adc adc;
 
@@ -52,15 +52,15 @@ inline void initInputs(void)
 inline void initOutputs(void)
 {
   Output_1::set_mode(DIGITAL_OUTPUT);
-  Output_1::set_value(true);
+  Output_1::set_value(false);
   Output_2::set_mode(DIGITAL_OUTPUT);
-  Output_2::set_value(true);
+  Output_2::set_value(false);
   Output_3::set_mode(DIGITAL_OUTPUT);
-  Output_3::set_value(true);
+  Output_3::set_value(false);
   Output_4::set_mode(DIGITAL_OUTPUT);
-  Output_4::set_value(true);
+  Output_4::set_value(false);
   OutputReturn::set_mode(DIGITAL_OUTPUT);
-  OutputReturn::set_value(true);
+  OutputReturn::set_value(false);
 }
 
 inline void initAnalogIn(void)
@@ -74,8 +74,6 @@ inline void initHW(void)
   initOutputs();
   initAnalogIn();
 }
-
-
 
 
 #endif /* HARDWARECONFIG_H_ */
