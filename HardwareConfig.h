@@ -42,7 +42,7 @@ public:
   void reset(void)
   {
     m_Step = 0;
-    activate_1()
+    activate_1();
   }
 
 private:
