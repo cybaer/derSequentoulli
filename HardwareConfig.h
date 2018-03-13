@@ -28,15 +28,55 @@
 
 using namespace avrlib;
 
+template <typename Out_1, typename Out_2, typename Out_3, typename Out_4>
+class SequentialSwitch
+{
+public:
+  void activateNextStep(void)
+  {
+    if(++m_Step == m_StepCount)
+      m_Step = 0;
+    m_ActivatFunctions[m_Step]();
+  }
+  void setStepCount(uint8_t count) { m_StepCount = count > 4 ? 4 : count; }
+  void reset(void)
+  {
+    m_Step = 0;
+    activate_1()
+  }
+
+private:
+  static void inactivateAll(void)
+  {
+    Out_1::Low();
+    Out_2::Low();
+    Out_3::Low();
+    Out_4::Low();
+  }
+  static void activate_1(void) { inactivateAll(); Out_1::High(); }
+  static void activate_2(void) { inactivateAll(); Out_2::High(); }
+  static void activate_3(void) { inactivateAll(); Out_3::High(); }
+  static void activate_4(void) { inactivateAll(); Out_4::High(); }
+
+  typedef void (*FP)(void);
+
+  const FP m_ActivatFunctions[4] = {activate_1, activate_2, activate_3, activate_4};
+  uint8_t m_StepCount;
+  uint8_t m_Step;
+};
+
 typedef Inverter<Gpio<PortD, 7> > Trigger;  // 13
 typedef EdgeTrigger<Gpio<PortB, 2>, 0> ResetIn;  // 16
 
-typedef Inverter<Gpio<PortD, 6> > Output_1;  // 6
-typedef Inverter<Gpio<PortD, 4> > Output_2;  // 4
-typedef Inverter<Gpio<PortD, 3> > Output_3;  // 3
-typedef Inverter<Gpio<PortD, 2> > Output_4;  // 2
+typedef Inverter<Gpio<PortD, 4> > Output_1;  // 6
+typedef Inverter<Gpio<PortD, 2> > Output_2;  // 4
+typedef Inverter<Gpio<PortD, 1> > Output_3;  // 3
+typedef Inverter<Gpio<PortD, 0> > Output_4;  // 2
+
+typedef SequentialSwitch<Output_1, Output_2, Output_3, Output_4> SeqSwitch;
 
 typedef Inverter<Gpio<PortB, 6> > OutputReturn;  // 9
+typedef Gpio<PortB, 7> Debug;                    // 10
 
 static const uint8_t AdcChannelSwitch = 4;
 typedef AnalogSwitch<Adc, 0, AdcChannelSwitch> SwitchSteps;
@@ -52,15 +92,17 @@ inline void initInputs(void)
 inline void initOutputs(void)
 {
   Output_1::set_mode(DIGITAL_OUTPUT);
-  Output_1::set_value(false);
+  Output_1::set_value(true);
   Output_2::set_mode(DIGITAL_OUTPUT);
-  Output_2::set_value(false);
+  Output_2::set_value(true);
   Output_3::set_mode(DIGITAL_OUTPUT);
-  Output_3::set_value(false);
+  Output_3::set_value(true);
   Output_4::set_mode(DIGITAL_OUTPUT);
-  Output_4::set_value(false);
+  Output_4::set_value(true);
   OutputReturn::set_mode(DIGITAL_OUTPUT);
   OutputReturn::set_value(false);
+  Debug::set_mode(DIGITAL_OUTPUT);
+  Debug::set_value(true);
 }
 
 inline void initAnalogIn(void)

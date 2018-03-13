@@ -11,6 +11,7 @@
 #include "avrlib/gpio.h"
 #include "avrlib/adc.h"
 #include "HardwareConfig.h"
+#include "BernoulliGate.h"
 
 
 
@@ -46,9 +47,9 @@ int main(void)
     }
 
 
+    Debug::Toggle();
 
 
-
-    _delay_ms(50);
+    _delay_ms(250);
   }
 }

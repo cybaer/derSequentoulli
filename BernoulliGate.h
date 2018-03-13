@@ -20,18 +20,38 @@
 #ifndef BERNOULLIGATE_H_
 #define BERNOULLIGATE_H_
 
+#include "avrlib/random.h"
 
+template<typename Out1, typename Out2>
 class BernoulliGate
 {
 public:
-  void operator() (bool in)
+  int8_t operator() (bool in)
   {
-    uint8_t rnd = avrlib::Random::GetByte();
-    if(rnd > m_threshold)
+    int8_t ret = 0;
+    if(in && !m_Old)
+    {
+      uint8_t rnd = avrlib::Random::GetByte();
+      if(rnd > m_Threshold)
+      {
+        ret = 1;
+        Out1::Low();
+        Out2::High();
+      }
+      else
+      {
+        Out1::High();
+        Out2::Low();
+      }
+    }
+    m_Old = in;
+    return ret;
   }
   void onReset();
+  void setThreshold(uint8_t threshold) { m_Threshold = threshold; }
 private:
-  uint8_t m_threshold;
+  uint8_t m_Threshold;
+  bool m_Old;
 
 };
 
