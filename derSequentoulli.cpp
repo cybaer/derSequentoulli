@@ -6,24 +6,24 @@
  */
 
 
-//#include <avr/interrupt.h>      // Header-Datei f. Interruptfunktion
 #include "avrlib/time.h"
 #include "avrlib/gpio.h"
 #include "avrlib/adc.h"
 #include "HardwareConfig.h"
 #include "BernoulliGate.h"
 
-
+BernoulliGate<Output_1, Output_2> bernoulliGate;
 
 int main(void)
 {
   sei();
   initHW();
   Adc::StartConversion(AdcChannelSwitch);
+  bernoulliGate.setThreshold(64);
 
   while(1)
   {
-    static uint8_t step = 4;
+    static uint8_t step = 3;
 
     if (Adc::ready())
     {
@@ -31,7 +31,7 @@ int main(void)
 
       //index = Adc::Read(1) >> 2;
       Adc::StartConversion(AdcChannelSwitch);
-      SeqSwitch.setStepCount(step+1);
+      SeqSwitch.setStepCount(step);
     }
 
     if(ResetIn::isTriggered())
@@ -42,7 +42,12 @@ int main(void)
 
     if(step == 0)
     {
-       //BernoulliGate(Trigger::value());
+      if(Trigger::isTriggered())
+      {
+        bernoulliGate.activateNextStep();
+      }
+      Debug::set_value(Trigger::getValue());
+      OutputReturn::set_value(Trigger::getValue());
     }
     else
     {
@@ -52,11 +57,6 @@ int main(void)
         Debug::Toggle();
       }
     }
-
-
-
-
-
     //_delay_ms(250);
   }
 }

@@ -34,15 +34,28 @@ class SequentialSwitch
 public:
   void activateNextStep(void)
   {
-    if(++m_Step >= m_StepCount)
+    if(++m_Step > m_StepCount)
       m_Step = 0;
+    inactivateAll();
     m_ActivatFunctions[m_Step]();
   }
-  void setStepCount(uint8_t count) { m_StepCount = count > 4 ? 4 : count; }
+  void setStepCount(uint8_t count)
+  {
+    if(count != m_StepCount)
+    {
+      m_StepCount = count > 3 ? 3 : count;
+      if(count == 0)
+      {
+        onReset();
+      }
+    }
+  }
   void onReset(void)
   {
     m_Step = 0;
-    activate_1();
+    inactivateAll();
+    if(m_StepCount != 0)
+      m_ActivatFunctions[m_Step]();
   }
 
 private:
@@ -53,14 +66,10 @@ private:
     Out_3::Low();
     Out_4::Low();
   }
-  static void activate_1(void) { inactivateAll(); Out_1::High(); }
-  static void activate_2(void) { inactivateAll(); Out_2::High(); }
-  static void activate_3(void) { inactivateAll(); Out_3::High(); }
-  static void activate_4(void) { inactivateAll(); Out_4::High(); }
 
   typedef void (*FP)(void);
 
-  const FP m_ActivatFunctions[4] = {activate_1, activate_2, activate_3, activate_4};
+  const FP m_ActivatFunctions[4] = {Out_1::High, Out_2::High, Out_3::High, Out_4::High};
   uint8_t m_StepCount;
   uint8_t m_Step;
 };

@@ -22,7 +22,7 @@
 
 #include "avrlib/random.h"
 
-template<typename Out1, typename Out2>
+template<typename Out_1, typename Out_2>
 class BernoulliGate
 {
 public:
@@ -31,21 +31,26 @@ public:
     int8_t ret = 0;
     if(in && !m_Old)
     {
-      uint8_t rnd = avrlib::Random::GetByte();
-      if(rnd > m_Threshold)
-      {
-        ret = 1;
-        Out1::Low();
-        Out2::High();
-      }
-      else
-      {
-        Out1::High();
-        Out2::Low();
-      }
+      ret = 1;
+      activateNextStep();
     }
     m_Old = in;
     return ret;
+  }
+
+  void activateNextStep(void)
+  {
+    uint8_t rnd = avrlib::Random::GetByte();
+    if(rnd > m_Threshold)
+    {
+      Out_1::Low();
+      Out_2::High();
+    }
+    else
+    {
+      Out_1::High();
+      Out_2::Low();
+    }
   }
   void onReset();
   void setThreshold(uint8_t threshold) { m_Threshold = threshold; }
