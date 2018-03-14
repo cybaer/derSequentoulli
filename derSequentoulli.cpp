@@ -19,22 +19,25 @@ int main(void)
 {
   sei();
   initHW();
+  Adc::StartConversion(AdcChannelSwitch);
 
   while(1)
   {
-    static uint8_t step = 0;
+    static uint8_t step = 4;
+
     if (Adc::ready())
     {
       step = SwitchSteps::getValue();
 
       //index = Adc::Read(1) >> 2;
       Adc::StartConversion(AdcChannelSwitch);
+      SeqSwitch.setStepCount(step+1);
     }
 
     if(ResetIn::isTriggered())
     {
       //BernoulliGate.onReset();
-      //SequentialSwitch.onReset();
+      SeqSwitch.onReset();
     }
 
     if(step == 0)
@@ -43,13 +46,17 @@ int main(void)
     }
     else
     {
-      //SequentialSwitch(Trigger::value());
+      if(Trigger::isTriggered())
+      {
+        SeqSwitch.activateNextStep();
+        Debug::Toggle();
+      }
     }
 
 
-    Debug::Toggle();
 
 
-    _delay_ms(250);
+
+    //_delay_ms(250);
   }
 }

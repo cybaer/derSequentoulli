@@ -34,12 +34,12 @@ class SequentialSwitch
 public:
   void activateNextStep(void)
   {
-    if(++m_Step == m_StepCount)
+    if(++m_Step >= m_StepCount)
       m_Step = 0;
     m_ActivatFunctions[m_Step]();
   }
   void setStepCount(uint8_t count) { m_StepCount = count > 4 ? 4 : count; }
-  void reset(void)
+  void onReset(void)
   {
     m_Step = 0;
     activate_1();
@@ -65,7 +65,7 @@ private:
   uint8_t m_Step;
 };
 
-typedef Inverter<Gpio<PortD, 7> > Trigger;  // 13
+typedef EdgeTrigger<Gpio<PortD, 7>, 0> Trigger;  // 13
 typedef EdgeTrigger<Gpio<PortB, 2>, 0> ResetIn;  // 16
 
 typedef Inverter<Gpio<PortD, 4> > Output_1;  // 6
@@ -73,32 +73,31 @@ typedef Inverter<Gpio<PortD, 2> > Output_2;  // 4
 typedef Inverter<Gpio<PortD, 1> > Output_3;  // 3
 typedef Inverter<Gpio<PortD, 0> > Output_4;  // 2
 
-typedef SequentialSwitch<Output_1, Output_2, Output_3, Output_4> SeqSwitch;
+SequentialSwitch<Output_1, Output_2, Output_3, Output_4> SeqSwitch;
 
 typedef Inverter<Gpio<PortB, 6> > OutputReturn;  // 9
 typedef Gpio<PortB, 7> Debug;                    // 10
 
 static const uint8_t AdcChannelSwitch = 4;
-typedef AnalogSwitch<Adc, 0, AdcChannelSwitch> SwitchSteps;
+typedef AnalogSwitch<Adc, 5, AdcChannelSwitch> SwitchSteps;
 
 extern Adc adc;
 
 inline void initInputs(void)
 {
   ResetIn::init();
-  Trigger::set_mode(DIGITAL_INPUT);
-  Trigger::High();
+  Trigger::init();
 }
 inline void initOutputs(void)
 {
   Output_1::set_mode(DIGITAL_OUTPUT);
-  Output_1::set_value(true);
+  Output_1::set_value(false);
   Output_2::set_mode(DIGITAL_OUTPUT);
-  Output_2::set_value(true);
+  Output_2::set_value(false);
   Output_3::set_mode(DIGITAL_OUTPUT);
-  Output_3::set_value(true);
+  Output_3::set_value(false);
   Output_4::set_mode(DIGITAL_OUTPUT);
-  Output_4::set_value(true);
+  Output_4::set_value(false);
   OutputReturn::set_mode(DIGITAL_OUTPUT);
   OutputReturn::set_value(false);
   Debug::set_mode(DIGITAL_OUTPUT);
