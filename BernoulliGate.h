@@ -26,6 +26,12 @@ template<typename Out_1, typename Out_2>
 class BernoulliGate
 {
 public:
+  BernoulliGate(void)
+  : m_Threshold(0)
+  , m_MaxVal(128)
+  , m_Old(false)
+{ }
+
   int8_t operator() (bool in)
   {
     int8_t ret = 0;
@@ -41,7 +47,7 @@ public:
   void activateNextStep(void)
   {
     uint8_t rnd = avrlib::Random::GetByte() & 0x7F;
-    if(rnd < m_Threshold)
+    if(m_Threshold > m_MaxVal-1 || rnd < m_Threshold)
     {
       Out_1::Low();
       Out_2::High();
@@ -53,11 +59,13 @@ public:
     }
   }
   void onReset();
-  void setThreshold(uint8_t threshold) { m_Threshold = threshold; }
+  void setThreshold(uint8_t threshold) { m_Threshold = threshold < 2 ? 0 : threshold; }
+  void setMaxValue(uint8_t maxVal) { m_MaxVal = maxVal; }
+
 private:
   uint8_t m_Threshold;
+  uint8_t m_MaxVal;
   bool m_Old;
-
 };
 
 

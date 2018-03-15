@@ -19,6 +19,7 @@ int main(void)
   sei();
   initHW();
   Adc::StartConversion(AdcChannelSwitch);
+  bernoulliGate.setMaxValue(MAX_CV);
   bernoulliGate.setThreshold(64);
 
   while(1)
@@ -41,8 +42,15 @@ int main(void)
       }
       case AdcChannelCV:
       {
-        uint8_t threshold = 127 - (Adc::Read(AdcChannelCV) >> 2) & 0xFF;
+        uint8_t threshold = MAX_CV - (Adc::Read(AdcChannelCV) >> 2) & 0xFF;
         Adc::StartConversion(AdcChannelSwitch);
+/*
+        Output_4::set_value(threshold & 0x1);
+        Output_3::set_value((threshold>>1) & 0x1);
+        Output_2::set_value((threshold>>2) & 0x1);
+        Output_1::set_value((threshold>>3) & 0x1);
+
+*/
 
         bernoulliGate.setThreshold(threshold);
         adcChannel = AdcChannelSwitch;
@@ -75,6 +83,5 @@ int main(void)
         Debug::Toggle();
       }
     }
-    //_delay_ms(250);
   }
 }

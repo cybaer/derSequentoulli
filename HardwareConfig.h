@@ -27,6 +27,7 @@
 #include "avrlib/adc.h"
 
 using namespace avrlib;
+static const uint8_t MAX_CV = 122;
 
 template <typename Out_1, typename Out_2, typename Out_3, typename Out_4>
 class SequentialSwitch
