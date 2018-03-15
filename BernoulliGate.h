@@ -40,8 +40,8 @@ public:
 
   void activateNextStep(void)
   {
-    uint8_t rnd = avrlib::Random::GetByte();
-    if(rnd > m_Threshold)
+    uint8_t rnd = avrlib::Random::GetByte() & 0x7F;
+    if(rnd < m_Threshold)
     {
       Out_1::Low();
       Out_2::High();

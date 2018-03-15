@@ -23,15 +23,33 @@ int main(void)
 
   while(1)
   {
+    static uint8_t adcChannel = AdcChannelSwitch;
+    static const uint8_t adcChannels[] = {AdcChannelSwitch, AdcChannelCV};
     static uint8_t step = 3;
 
     if (Adc::ready())
     {
-      step = SwitchSteps::getValue();
+      switch(adcChannel)
+      {
+      case AdcChannelSwitch:
+      {
+        step = SwitchSteps::getValue();
+        Adc::StartConversion(AdcChannelCV);
+        SeqSwitch.setStepCount(step);
+        adcChannel = AdcChannelCV;
+        break;
+      }
+      case AdcChannelCV:
+      {
+        uint8_t threshold = 127 - (Adc::Read(AdcChannelCV) >> 2) & 0xFF;
+        Adc::StartConversion(AdcChannelSwitch);
 
-      //index = Adc::Read(1) >> 2;
-      Adc::StartConversion(AdcChannelSwitch);
-      SeqSwitch.setStepCount(step);
+        bernoulliGate.setThreshold(threshold);
+        adcChannel = AdcChannelSwitch;
+        break;
+      }
+      default: adcChannel = 0;
+      }
     }
 
     if(ResetIn::isTriggered())

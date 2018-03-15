@@ -87,6 +87,7 @@ SequentialSwitch<Output_1, Output_2, Output_3, Output_4> SeqSwitch;
 typedef Inverter<Gpio<PortB, 6> > OutputReturn;  // 9
 typedef Gpio<PortB, 7> Debug;                    // 10
 
+static const uint8_t AdcChannelCV = 1;
 static const uint8_t AdcChannelSwitch = 4;
 typedef AnalogSwitch<Adc, 5, AdcChannelSwitch> SwitchSteps;
 
