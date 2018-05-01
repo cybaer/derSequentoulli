@@ -44,14 +44,6 @@ int main(void)
       {
         uint8_t threshold = MAX_CV - (Adc::Read(AdcChannelCV) >> 2) & 0xFF;
         Adc::StartConversion(AdcChannelSwitch);
-/*
-        Output_4::set_value(threshold & 0x1);
-        Output_3::set_value((threshold>>1) & 0x1);
-        Output_2::set_value((threshold>>2) & 0x1);
-        Output_1::set_value((threshold>>3) & 0x1);
-
-*/
-
         bernoulliGate.setThreshold(threshold);
         adcChannel = AdcChannelSwitch;
         break;
@@ -68,19 +60,20 @@ int main(void)
 
     if(step == 0)
     {
+      const bool triggerVal = Trigger::getValue();
       if(Trigger::isTriggered())
       {
         bernoulliGate.activateNextStep();
+        // prevents glitches through hardware latencies
+        _delay_us(200.0);
       }
-      Debug::set_value(Trigger::getValue());
-      OutputReturn::set_value(Trigger::getValue());
+      OutputReturn::set_value(triggerVal);
     }
     else
     {
       if(Trigger::isTriggered())
       {
         SeqSwitch.activateNextStep();
-        Debug::Toggle();
       }
     }
   }

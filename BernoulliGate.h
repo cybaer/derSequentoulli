@@ -21,6 +21,7 @@
 #define BERNOULLIGATE_H_
 
 #include "avrlib/random.h"
+#define DELAY_125NS asm volatile("nop")   // only on 8MHz
 
 template<typename Out_1, typename Out_2>
 class BernoulliGate
@@ -30,7 +31,7 @@ public:
   : m_Threshold(0)
   , m_MaxVal(128)
   , m_Old(false)
-{ }
+  { }
 
   int8_t operator() (bool in)
   {
@@ -50,12 +51,16 @@ public:
     if(m_Threshold > m_MaxVal-1 || rnd < m_Threshold)
     {
       Out_1::Low();
+      DELAY_125NS;
+      DELAY_125NS;
       Out_2::High();
     }
     else
     {
-      Out_1::High();
       Out_2::Low();
+      DELAY_125NS;
+      DELAY_125NS;
+      Out_1::High();
     }
   }
   void onReset();
@@ -67,10 +72,5 @@ private:
   uint8_t m_MaxVal;
   bool m_Old;
 };
-
-
-
-
-
 
 #endif /* BERNOULLIGATE_H_ */
